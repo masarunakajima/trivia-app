@@ -91,7 +91,7 @@ def test_trivia_joingame(mocker):
     mocker.patch('random.choice', side_effect=lambda seq: seq[0])
 
     # mock the response from the game table
-    app.TABLE.query.return_value = {'Items':[{'connectionId': "connection-1", "playerName" : "AliceBlue", "score" : "10"}]}
+    app.TABLE.query.return_value = {'Items':[{'connectionId': "connection-1", "playerName" : "AliceBlue", "score" : "20"}]}
 
     # call the lambda entry point
     app.trivia_joingame(JOIN_GAME_EVENT, None)
@@ -106,7 +106,7 @@ def test_trivia_joingame(mocker):
             })
     # assert the post_to_connection sends a new player list
     app.MANAGEMENT.post_to_connection.assert_called_with(
-        Data='{"action": "playerlist", "players": [{"connectionId": "connection-1", "playerName": "AliceBlue", "score": 10, "currentPlayer": true}]}', ConnectionId='connection-1'
+        Data='{"action": "playerlist", "players": [{"connectionId": "connection-1", "playerName": "AliceBlue", "score": 20, "currentPlayer": true}]}', ConnectionId='connection-1'
     )
 
 def test_trivia_startgame(mocker):
@@ -116,7 +116,7 @@ def test_trivia_startgame(mocker):
     mocker.patch.object(app, 'STEPFUNCTIONS')
 
     # mock the response from the game table
-    app.TABLE.query.return_value = {'Items':[{'connectionId': "connection-1", "playerName" : "AliceBlue", "score" : "10"}]}
+    app.TABLE.query.return_value = {'Items':[{'connectionId': "connection-1", "playerName" : "AliceBlue", "score" : "20"}]}
 
     # call the lambda entry point
     app.trivia_startgame(START_GAME_EVENT, None)
@@ -148,7 +148,7 @@ def test_trivia_question(mocker):
     mocker.patch.object(app, 'MANAGEMENT')
 
     # mock the response from the game table
-    app.TABLE.query.return_value = {'Items':[{'connectionId': "connection-1", "playerName" : "AliceBlue", "score" : "10"}]}
+    app.TABLE.query.return_value = {'Items':[{'connectionId': "connection-1", "playerName" : "AliceBlue", "score" : "20"}]}
 
     # call the lambda entry point
     app.trivia_question(QUESTION_EVENT, None)
@@ -181,11 +181,11 @@ def test_trivia_calculate_scores_correct(mocker):
     # assert we updated the game item, score is incremented
     app.TABLE.update_item.assert_called_with(
         Key={'gameId': '01234567012301230123012345678901', 'connectionId': 'connection-1'},
-        AttributeUpdates={'score': {'Value': 10, 'Action': 'PUT'}}
+        AttributeUpdates={'score': {'Value': 20, 'Action': 'PUT'}}
     )
 
     app.MANAGEMENT.post_to_connection.assert_has_calls([
-        mock.call(Data='{"action": "playerlist", "players": [{"connectionId": "connection-1", "playerName": "AliceBlue", "score": 10, "currentPlayer": true}]}', ConnectionId='connection-1'),
+        mock.call(Data='{"action": "playerlist", "players": [{"connectionId": "connection-1", "playerName": "AliceBlue", "score": 20, "currentPlayer": true}]}', ConnectionId='connection-1'),
         mock.call(Data='{"action": "gameover"}', ConnectionId='connection-1')
         ])
 
@@ -221,7 +221,7 @@ def test_broadcast_connection_gone(mocker):
     mocker.patch.object(app, 'MANAGEMENT')
 
     # mock the response from the game table
-    app.TABLE.query.return_value = {'Items':[{'connectionId': "connection-1", "playerName" : "AliceBlue", "score" : "10"}]}
+    app.TABLE.query.return_value = {'Items':[{'connectionId': "connection-1", "playerName" : "AliceBlue", "score" : "20"}]}
 
     app.MANAGEMENT.post_to_connection.side_effect = ClientError(
         {
@@ -239,7 +239,7 @@ def test_broadcast_other_error(mocker):
     mocker.patch.object(app, 'MANAGEMENT')
 
     # mock the response from the game table
-    app.TABLE.query.return_value = {'Items':[{'connectionId': "connection-1", "playerName" : "AliceBlue", "score" : "10"}]}
+    app.TABLE.query.return_value = {'Items':[{'connectionId': "connection-1", "playerName" : "AliceBlue", "score" : "20"}]}
 
     app.MANAGEMENT.post_to_connection.side_effect = ClientError(
         {
